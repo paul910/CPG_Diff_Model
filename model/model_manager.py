@@ -45,6 +45,8 @@ class ModelManager:
                 self.optimizer.step()
 
                 if step % 100 == 0:
+                    print("Allocated:", torch.cuda.memory_allocated())
+                    print("Reserved: ", torch.cuda.memory_reserved())
                     torch.cuda.empty_cache()
                     print(f"Epoch {epoch} | step {step:03d} Loss: {loss.item()} ")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
