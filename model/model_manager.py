@@ -33,6 +33,7 @@ class ModelManager:
 
     def train_model(self):
         for epoch in range(self.config.EPOCHS):
+            torch.cuda.empty_cache()
             for step, batch in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
                 if batch.shape[0] != self.config.BATCH_SIZE:
                     continue
