@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
+import gc
 import torch.nn.functional as F
 from torch.optim import Adam
 from tqdm import tqdm
@@ -47,6 +48,7 @@ class ModelManager:
                 if step % 100 == 0:
                     print("Allocated:", torch.cuda.memory_allocated())
                     print("Reserved: ", torch.cuda.memory_reserved())
+                    gc.collect()
                     torch.cuda.empty_cache()
                     print(f"Epoch {epoch} | step {step:03d} Loss: {loss.item()} ")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
