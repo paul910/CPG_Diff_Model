@@ -14,7 +14,7 @@ class DiffusionUtils:
         alphas_cumprod = torch.cumprod(alphas, axis=0)
         alphas_cumprod_prev = F.pad(alphas_cumprod[:-1], (1, 0), value=1.0)
         self.sqrt_recip_alphas = torch.sqrt(1.0 / alphas)
-        self.sqrt_alphas_cumprod = torch.sqrt(alphas_cumprod).to(self.config.DEVICE)
+        self.sqrt_alphas_cumprod = torch.sqrt(alphas_cumprod)
         self.sqrt_one_minus_alphas_cumprod = torch.sqrt(1. - alphas_cumprod)
         self.posterior_variance = self.betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
 
@@ -25,7 +25,8 @@ class DiffusionUtils:
 
     def get_index_from_list(self, vals, t, x_shape):
         batch_size = t.shape[0]
-        out = vals.gather(-1, t).to(self.config.DEVICE)
+        vals = vals.to(self.config.DEVICE)
+        out = vals.gather(-1, t)
         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
 
     def forward_diffusion_sample(self, x_0, t):
