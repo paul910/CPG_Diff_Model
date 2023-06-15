@@ -14,7 +14,7 @@ class ModelManager:
     def __init__(self, config: Config, diffusion_utils: DiffusionUtils):
         self.config = config
         self.diffusion_utils = diffusion_utils
-        self.model = Unet(self.config.MODEL_DEPTH).to(self.config.DEVICE)
+        self.model = Unet(self.config.MODEL_DEPTH, self.config.MODEL_START_CHANNELS, self.config.TIME_EMB_DIM).to(self.config.DEVICE)
         self.optimizer = Adam(self.model.parameters(), lr=self.config.LEARNING_RATE)
         self.data_loader = get_adj_dataloader(self.config.DATA_PATH, self.config.BATCH_SIZE, self.config.MODEL_DEPTH)
 
@@ -24,7 +24,7 @@ class ModelManager:
             diffusion_utils.show_forward_diffusion(adj[0])
 
         if self.config.LOAD_MODEL:
-            self.model.load_state_dict(torch.load(self.config.MODEL_PATH))
+            self.model.load_state_dict(torch.load(self.config.MODEL_PATH, map_location=self.config.DEVICE))
 
     def get_loss(self, x_0, t):
         x_noisy, noise = self.diffusion_utils.forward_diffusion_sample(x_0, t)
@@ -48,7 +48,7 @@ class ModelManager:
                     print(f"Epoch {epoch} | step {step:03d} Loss: {loss.item()} ")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
                     if self.config.VISUALIZE:
-                        self.sample_plot_image(32)
+                        self.sample_plot_image(64)
 
     @torch.no_grad()
     def sample_plot_image(self, num_nodes):

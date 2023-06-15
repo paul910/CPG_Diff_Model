@@ -51,14 +51,14 @@ class SinusoidalPositionEmbeddings(nn.Module):
 
 class Unet(nn.Module):
 
-    def __init__(self, model_depth):
+    def __init__(self, model_depth, model_start_channels=32, time_emb_dim=32):
         super().__init__()
         in_channels = 1
-        start = 32
+        start = model_start_channels
         down_channels = tuple(start * 2**i for i in range(model_depth))
         up_channels = tuple(reversed(down_channels))
         out_dim = 1
-        time_emb_dim = 32
+        time_emb_dim = time_emb_dim
 
         # Time embedding
         self.time_mlp = nn.Sequential(
