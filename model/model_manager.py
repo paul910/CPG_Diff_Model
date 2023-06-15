@@ -33,7 +33,6 @@ class ModelManager:
 
     def train_model(self):
         for epoch in range(self.config.EPOCHS):
-            torch.cuda.empty_cache()
             for step, batch in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
                 if batch.shape[0] != self.config.BATCH_SIZE:
                     continue
@@ -46,6 +45,7 @@ class ModelManager:
                 self.optimizer.step()
 
                 if step % 100 == 0:
+                    torch.cuda.empty_cache()
                     print(f"Epoch {epoch} | step {step:03d} Loss: {loss.item()} ")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
                     if self.config.VISUALIZE:
