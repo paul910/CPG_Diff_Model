@@ -3,7 +3,7 @@ import torch
 
 class Config:
     DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    BATCH_SIZE = 4
+    BATCH_SIZE = 2
     MODEL_DEPTH = 2
     MODEL_START_CHANNELS = 64
     TIME_EMB_DIM = 32

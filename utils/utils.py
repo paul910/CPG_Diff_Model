@@ -9,14 +9,14 @@ from config import Config
 class DiffusionUtils:
     def __init__(self, config: Config):
         self.config = config
-        self.betas = self.geometric_beta_schedule(timesteps=self.config.T).to(self.config.DEVICE)
+        self.betas = self.geometric_beta_schedule(timesteps=self.config.T)
         alphas = 1. - self.betas
         alphas_cumprod = torch.cumprod(alphas, axis=0)
         alphas_cumprod_prev = F.pad(alphas_cumprod[:-1], (1, 0), value=1.0)
-        self.sqrt_recip_alphas = torch.sqrt(1.0 / alphas).to(self.config.DEVICE)
+        self.sqrt_recip_alphas = torch.sqrt(1.0 / alphas)
         self.sqrt_alphas_cumprod = torch.sqrt(alphas_cumprod).to(self.config.DEVICE)
-        self.sqrt_one_minus_alphas_cumprod = torch.sqrt(1. - alphas_cumprod).to(self.config.DEVICE)
-        self.posterior_variance = self.betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod).to(self.config.DEVICE)
+        self.sqrt_one_minus_alphas_cumprod = torch.sqrt(1. - alphas_cumprod)
+        self.posterior_variance = self.betas * (1. - alphas_cumprod_prev) / (1. - alphas_cumprod)
 
     @staticmethod
     def geometric_beta_schedule(timesteps, start=0.0001, end=0.02):
@@ -26,7 +26,7 @@ class DiffusionUtils:
     def get_index_from_list(self, vals, t, x_shape):
         batch_size = t.shape[0]
         out = vals.gather(-1, t).to(self.config.DEVICE)
-        return out.reshape(batch_size, *((1,) * (len(x_shape) - 1))).to(self.config.DEVICE)
+        return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
 
     def forward_diffusion_sample(self, x_0, t):
         noise = torch.randn_like(x_0)
