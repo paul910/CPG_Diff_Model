@@ -8,7 +8,7 @@ class Config:
     LEARNING_RATE = 1e-4
     T = 1000
     EPOCHS = 1000
-    VISUALIZE = True
+    VISUALIZE = False
     DATA_PATH = 'data/reveal'
-    LOAD_MODEL = True
+    LOAD_MODEL = False
     MODEL_PATH = 'model/model.pth'
