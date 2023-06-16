@@ -36,7 +36,7 @@ class DiffusionUtils:
             self.sqrt_one_minus_alphas_cumprod, t, x_0.shape
         )
         return sqrt_alphas_cumprod_t.to(self.config.DEVICE) * x_0.to(self.config.DEVICE) \
-               + sqrt_one_minus_alphas_cumprod_t.to(self.config.DEVICE) * noise.to(self.config.DEVICE), noise
+               + sqrt_one_minus_alphas_cumprod_t.to(self.config.DEVICE) * noise.to(self.config.DEVICE), noise.to(self.config.DEVICE)
 
     @torch.no_grad()
     def sample_timestep(self, x, t, model):
