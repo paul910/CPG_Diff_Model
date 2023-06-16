@@ -161,8 +161,7 @@ class AdjacencyCPGDataset(TorchDataset):
         Returns:
             list: Sorted list of paths to processed .pt files.
         """
-        files_dict = {f: self.get_dim(f) for f in os.listdir(self.processed_dir) if f.endswith('.pt')}
-        return sorted(files_dict, key=lambda k: files_dict[k])
+        return [f for f in os.listdir(self.processed_dir) if f.endswith('.pt')]
 
     def process(self):
         """
@@ -173,10 +172,11 @@ class AdjacencyCPGDataset(TorchDataset):
         for file_path in tqdm(dataset.files):
             data = torch.load(file_path)
             adj = to_dense_adj(data.edge_index)
-            adj = self.adjust_dimensions(adj)
-            adj = torch.clamp(2 * adj - 1, -1, 1)
+            if adj.shape[1] > 100:
+                adj = self.adjust_dimensions(adj)
+                adj = torch.clamp(2 * adj - 1, -1, 1)
 
-            torch.save(adj, os.path.join(self.processed_dir, os.path.basename(file_path) + '.pt'))
+                torch.save(adj, os.path.join(self.processed_dir, os.path.basename(file_path) + '.pt'))
 
     def adjust_dimensions(self, adjacency_matrix):
         """

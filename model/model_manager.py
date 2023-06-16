@@ -69,10 +69,6 @@ class ModelManager:
             t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
             adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
             adj = torch.clamp(adj, -1.0, 1.0)
-            if i == 0:
-                adj[adj < 0] = -1.0
-                adj[adj >= 0] = 1.0
-
             if i % stepsize == 0:
                 plt.subplot(1, num_show, int(i / stepsize) + 1)
                 show_tensor_image(adj.detach().cpu())
