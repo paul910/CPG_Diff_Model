@@ -24,7 +24,7 @@ class DiffusionUtils:
         return torch.tensor([start * decay_rate ** i for i in range(timesteps)])
 
     def get_index_from_list(self, vals, t, x_shape):
-        batch_size = t.shape[0]
+        batch_size = t.shape[0]g
         vals = vals.to(self.config.DEVICE)
         out = vals.gather(-1, t)
         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
@@ -35,9 +35,7 @@ class DiffusionUtils:
         sqrt_one_minus_alphas_cumprod_t = self.get_index_from_list(
             self.sqrt_one_minus_alphas_cumprod, t, x_0.shape
         )
-        return sqrt_alphas_cumprod_t.to(self.config.DEVICE) * x_0.to(self.config.DEVICE) \
-               + sqrt_one_minus_alphas_cumprod_t.to(self.config.DEVICE) * noise.to(self.config.DEVICE), noise.to(
-            self.config.DEVICE)
+        return sqrt_alphas_cumprod_t * x_0 + sqrt_one_minus_alphas_cumprod_t * noise, noise
 
     @torch.no_grad()
     def sample_timestep(self, x, t, model):
