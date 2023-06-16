@@ -6,18 +6,17 @@ from torch.optim import Adam
 from tqdm import tqdm
 
 from config import Config
-from dataloader import get_adj_dataloader
 from model.model import Unet
 from utils.utils import DiffusionUtils, show_tensor_image
 
 
 class ModelManager:
-    def __init__(self, config: Config, diffusion_utils: DiffusionUtils):
+    def __init__(self, config: Config, diffusion_utils: DiffusionUtils, data_loader):
         self.config = config
         self.diffusion_utils = diffusion_utils
         self.model = Unet(self.config.MODEL_DEPTH, self.config.MODEL_START_CHANNELS, self.config.TIME_EMB_DIM).to(self.config.DEVICE)
         self.optimizer = Adam(self.model.parameters(), lr=self.config.LEARNING_RATE)
-        self.data_loader = get_adj_dataloader(self.config.DATA_PATH, self.config.BATCH_SIZE, self.config.MODEL_DEPTH)
+        self.data_loader = data_loader
 
         # Show forward diffusion
         if config.VISUALIZE:
