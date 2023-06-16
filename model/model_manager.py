@@ -35,10 +35,11 @@ class ModelManager:
     def train_model(self):
         with open('loss_values.csv', 'w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(['epoch', 'step', 'loss', 'nodes'])
+            writer.writerow(['epoch', 'avg_loss'])
 
         for epoch in range(self.config.EPOCHS):
             print(f"Epoch {epoch} started")
+            losses = []
 
             pbar = tqdm(enumerate(self.data_loader), total=len(self.data_loader))
             for step, batch in pbar:
@@ -54,14 +55,17 @@ class ModelManager:
                 loss.backward()
                 self.optimizer.step()
 
-                with open('loss_values.csv', 'a', newline='') as f:
-                    writer = csv.writer(f)
-                    writer.writerow([epoch, step, loss.item(), batch.shape[2]])
-
                 if step % 100 == 0:
+                    losses.append(loss.item())
                     pbar.set_description(f"Epoch {epoch}, step {step}, Loss: {loss.item()}")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
 
+            avg_loss = sum(losses) / len(losses)
+            pbar.set_description(f"Epoch {epoch}, Loss: {avg_loss}")
+
+            with open('loss_values.csv', 'a', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([epoch, avg_loss])
             self.save_sample(epoch)
 
     def save_sample(self, epoch):

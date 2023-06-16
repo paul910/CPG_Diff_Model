@@ -66,7 +66,7 @@ class DiffusionUtils:
     def show_forward_diffusion(self, adj: Tensor):
         plt.figure(figsize=(15, 15))
         plt.axis('off')
-        num_disp = 10
+        num_disp = 6
         stepsize = int(self.config.T / num_disp)
 
         for idx in range(0, self.config.T, stepsize):
