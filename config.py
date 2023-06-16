@@ -7,7 +7,7 @@ class Config:
     MODEL_DEPTH = 4
     MODEL_START_CHANNELS = 64
     TIME_EMB_DIM = 32
-    LEARNING_RATE = 1e-5
+    LEARNING_RATE = 1e-4
     T = 1000
     EPOCHS = 1000
     VISUALIZE = False

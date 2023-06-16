@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import torch
 import gc
+import csv
 import torch.nn.functional as F
 from torch.optim import Adam
 from tqdm import tqdm
@@ -32,6 +33,10 @@ class ModelManager:
         return F.l1_loss(noise, noise_pred)
 
     def train_model(self):
+        with open('loss_values.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['epoch', 'step', 'loss'])
+
         for epoch in range(self.config.EPOCHS):
             for step, batch in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
                 if batch.shape[0] != self.config.BATCH_SIZE:
@@ -46,10 +51,11 @@ class ModelManager:
                 loss.backward()
                 self.optimizer.step()
 
-                if step % 100 == 0:
-                    print("Allocated:", torch.cuda.memory_allocated())
-                    print("Reserved: ", torch.cuda.memory_reserved())
+                with open('loss_values.csv', 'a', newline='') as f:
+                    writer = csv.writer(f)
+                    writer.writerow([epoch, step, loss.item()])
 
+                if step % 100 == 0:
                     print(f"Epoch {epoch} | step {step:03d} Loss: {loss.item()} ")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
                     if self.config.VISUALIZE:
