@@ -40,7 +40,7 @@ class ModelManager:
 
                 self.optimizer.zero_grad()
 
-                t = torch.randint(0, self.config.T, (self.config.BATCH_SIZE,), self.config.DEVICE).long()
+                t = torch.randint(0, self.config.T, (self.config.BATCH_SIZE,), device=self.config.DEVICE).long()
                 loss = self.get_loss(batch, t)
                 loss.backward()
                 self.optimizer.step()
