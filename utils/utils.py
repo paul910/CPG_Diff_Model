@@ -64,9 +64,9 @@ class DiffusionUtils:
             return model_mean + torch.sqrt(posterior_variance_t) * noise
 
     def show_forward_diffusion(self, adj: Tensor):
-        plt.figure(figsize=(30, 30))
+        plt.figure(figsize=(15, 15))
         plt.axis('off')
-        num_disp = 15
+        num_disp = 10
         stepsize = int(self.config.T / num_disp)
 
         for idx in range(0, self.config.T, stepsize):

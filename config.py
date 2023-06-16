@@ -11,6 +11,6 @@ class Config:
     T = 1000
     EPOCHS = 1000
     VISUALIZE = False
-    LOAD_MODEL = False
+    LOAD_MODEL = True
     DATA_PATH = 'data/reveal'
     MODEL_PATH = 'model/model.pth'

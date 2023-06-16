@@ -30,15 +30,18 @@ class ModelManager:
     def get_loss(self, x_0, t):
         x_noisy, noise = self.diffusion_utils.forward_diffusion_sample(x_0, t)
         noise_pred = self.model(x_noisy, t)
-        return F.l1_loss(noise, noise_pred)
+        return F.smooth_l1_loss(noise, noise_pred)
 
     def train_model(self):
         with open('loss_values.csv', 'w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(['epoch', 'step', 'loss'])
+            writer.writerow(['epoch', 'step', 'loss', 'nodes'])
 
         for epoch in range(self.config.EPOCHS):
-            for step, batch in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
+            print(f"Epoch {epoch} started")
+
+            pbar = tqdm(enumerate(self.data_loader), total=len(self.data_loader))
+            for step, batch in pbar:
                 if batch.shape[0] != self.config.BATCH_SIZE:
                     continue
 
@@ -53,13 +56,23 @@ class ModelManager:
 
                 with open('loss_values.csv', 'a', newline='') as f:
                     writer = csv.writer(f)
-                    writer.writerow([epoch, step, loss.item()])
+                    writer.writerow([epoch, step, loss.item(), batch.shape[2]])
 
                 if step % 100 == 0:
-                    print(f"Epoch {epoch} | step {step:03d} Loss: {loss.item()} ")
+                    pbar.set_description(f"Epoch {epoch}, step {step}, Loss: {loss.item()}")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
-                    if self.config.VISUALIZE:
-                        self.sample_plot_image(64)
+
+            self.save_sample(epoch)
+
+    def save_sample(self, epoch):
+        adj = torch.randn((1, 1, 128, 128), device=self.config.DEVICE)
+        out = adj
+        for i in reversed(range(self.config.T)):
+            t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
+            adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
+            adj = torch.clamp(adj, -1.0, 1.0)
+            out = torch.cat((out, adj), 0)
+        torch.save(out, f'out_{epoch}.pt')
 
     @torch.no_grad()
     def sample_plot_image(self, num_nodes):
