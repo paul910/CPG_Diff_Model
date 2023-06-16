@@ -61,7 +61,7 @@ class ModelManager:
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
 
             avg_loss = sum(losses) / len(losses)
-            pbar.set_description(f"Epoch {epoch}, Loss: {avg_loss}")
+            print(f"Epoch {epoch}, Loss: {avg_loss}")
 
             with open('loss_values.csv', 'a', newline='') as f:
                 writer = csv.writer(f)
