@@ -25,6 +25,7 @@ class DiffusionUtils:
 
     def get_index_from_list(self, vals, t, x_shape):
         batch_size = t.shape[0]
+        vals = vals.to(self.config.DEVICE)
         out = vals.gather(-1, t)
         return out.reshape(batch_size, *((1,) * (len(x_shape) - 1)))
 
