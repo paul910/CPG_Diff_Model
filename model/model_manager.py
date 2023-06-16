@@ -38,8 +38,10 @@ class ModelManager:
                 if batch.shape[0] != self.config.BATCH_SIZE:
                     continue
 
-                self.optimizer.zero_grad()
+                torch.cuda.empty_cache()
+                gc.collect()
 
+                self.optimizer.zero_grad()
                 t = torch.randint(0, self.config.T, (self.config.BATCH_SIZE,), device=self.config.DEVICE).long()
                 loss = self.get_loss(batch, t)
                 loss.backward()
@@ -48,8 +50,7 @@ class ModelManager:
                 if step % 100 == 0:
                     print("Allocated:", torch.cuda.memory_allocated())
                     print("Reserved: ", torch.cuda.memory_reserved())
-                    gc.collect()
-                    torch.cuda.empty_cache()
+
                     print(f"Epoch {epoch} | step {step:03d} Loss: {loss.item()} ")
                     torch.save(self.model.state_dict(), self.config.MODEL_PATH)
                     if self.config.VISUALIZE:
@@ -69,7 +70,12 @@ class ModelManager:
             t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
             adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
             adj = torch.clamp(adj, -1.0, 1.0)
+            if i == 0:
+                adj[adj < 0] = -1.0
+                adj[adj >= 0] = 1.0
+
             if i % stepsize == 0:
                 plt.subplot(1, num_show, int(i / stepsize) + 1)
                 show_tensor_image(adj.detach().cpu())
+
         plt.show()

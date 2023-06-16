@@ -20,5 +20,5 @@ class SizedBatchSampler(BatchSampler):
 
 def get_adj_dataloader(data_path: str, batch_size: int, model_depth=4):
     dataset = AdjacencyCPGDataset(data_path, model_depth)
-    sampler = SizedBatchSampler(SequentialSampler(dataset), batch_size=batch_size, drop_last=False)
-    return DataLoader(dataset, batch_sampler=sampler)
+    #sampler = SizedBatchSampler(SequentialSampler(dataset), batch_size=batch_size, drop_last=False)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=True)
