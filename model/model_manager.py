@@ -102,6 +102,7 @@ class ModelManager:
     def generate_graphs(self, num_graphs):
 
         for num in tqdm(range(num_graphs), total=num_graphs, desc='Generating graphs: '):
+            adj = torch.randn((1, 1, 128, 128), device=self.config.DEVICE)
             for i in reversed(range(self.config.T)):
                 t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
                 adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
