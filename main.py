@@ -13,6 +13,5 @@ def main():
     model_manager.generate_graphs(1000)
 
 
-
 if __name__ == "__main__":
     main()

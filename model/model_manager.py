@@ -99,6 +99,7 @@ class ModelManager:
 
         plt.show()
 
+    @torch.no_grad()
     def generate_graphs(self, num_graphs):
 
         for num in tqdm(range(num_graphs), total=num_graphs, desc='Generating graphs: '):
@@ -107,7 +108,7 @@ class ModelManager:
                 t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
                 adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
                 adj = torch.clamp(adj, -1.0, 1.0)
-                adj = adj.squeeze().squeeze().cpu().numpy()
+                adj = adj.squeeze().squeeze().detach().cpu().numpy()
                 utils.normalize(adj)
 
             torch.save(adj, f'output/graphs/graph_{num}.pt')
