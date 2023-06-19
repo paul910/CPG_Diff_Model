@@ -4,6 +4,7 @@ data/
 processed/
 raw/
 output/
+stats/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

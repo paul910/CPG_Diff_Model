@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from config import Config
 from model.model import Unet
+from utils import utils
 from utils.utils import DiffusionUtils, show_tensor_image
 
 
@@ -97,3 +98,14 @@ class ModelManager:
                 show_tensor_image(adj.detach().cpu())
 
         plt.show()
+
+    def generate_graphs(self, num_graphs):
+
+        for num in tqdm(range(num_graphs), total=num_graphs, desc='Generating graphs: '):
+            for i in reversed(range(self.config.T)):
+                t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
+                adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
+                adj = torch.clamp(adj, -1.0, 1.0)
+                utils.normalize(adj)
+
+            torch.save(adj, f'output/graphs/graph_{num}.pt')

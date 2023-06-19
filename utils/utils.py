@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import torch
 import torch.nn.functional as F
+import numpy as np
 from torch import Tensor
 
 from config import Config
@@ -81,3 +82,10 @@ class DiffusionUtils:
 def show_tensor_image(adj: Tensor):
     adj = adj.squeeze().numpy()
     plt.imshow(adj, cmap='gray')
+
+
+def normalize(adj):
+    mid = (np.max(adj) - np.min(adj)) / 2
+    adj[adj < mid] = -1.0
+    adj[adj >= mid] = 1.0
+    return adj
