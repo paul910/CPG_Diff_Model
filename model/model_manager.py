@@ -100,14 +100,15 @@ class ModelManager:
         plt.show()
 
     @torch.no_grad()
-    def generate_graphs(self, num_graphs):
+    def generate_graphs(self):
 
-        for num in tqdm(range(num_graphs), total=num_graphs, desc='Generating graphs: '):
-            adj = torch.randn((1, 1, 128, 128), device=self.config.DEVICE)
-            for i in reversed(range(self.config.T)):
-                t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
-                adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
-            adj = torch.clamp(adj, -1.0, 1.0)
-            adj = adj.squeeze().squeeze().detach().cpu().numpy()
-            utils.normalize(adj)
-            torch.save(adj, f'output/graphs/graph_{num}.pt')
+        for nodes in [128, 256, 512, 768, 1024]:
+            for num in tqdm(range(50), desc='Generating graphs: '):
+                adj = torch.randn((1, 1, nodes, nodes), device=self.config.DEVICE)
+                for i in reversed(range(self.config.T)):
+                    t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
+                    adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
+                adj = torch.clamp(adj, -1.0, 1.0)
+                adj = adj.squeeze().squeeze().detach().cpu().numpy()
+                utils.normalize(adj)
+                torch.save(adj, f'output/graphs/graph_{nodes}_{num}.pt')

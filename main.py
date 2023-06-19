@@ -10,7 +10,7 @@ def main():
     dataloader = get_adj_dataloader(config.DATA_PATH, config.BATCH_SIZE, config.MODEL_DEPTH)
     model_manager = ModelManager(config, diffusion_utils, dataloader)
     #model_manager.sample_plot_image(64)
-    model_manager.generate_graphs(1000)
+    model_manager.generate_graphs()
 
 
 if __name__ == "__main__":

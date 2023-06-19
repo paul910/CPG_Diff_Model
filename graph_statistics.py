@@ -97,8 +97,7 @@ def compute_centralization(dataloader):
     return out
 
 
-def compute_graph_statistics():
-    dataloader = get_adj_dataloader(Config.DATA_PATH, Config.BATCH_SIZE, Config.MODEL_DEPTH)
+def compute_graph_statistics(dataloader):
     edges_per_graph = compute_edges_per_graph(dataloader)
     density = compute_density(dataloader)
     cluster_coefficient = compute_cluster_coefficient(dataloader)
@@ -110,8 +109,9 @@ def compute_graph_statistics():
     centralization = pd.DataFrame.from_dict(centralization, orient='index', columns=['Avg. Centralization'])
 
     combined = pd.concat([edges_per_graph, density, cluster_coefficient, centralization], axis=1).sort_index()
-    combined.to_csv("stats/statistics.csv")
+    combined.to_csv("stats/statistics_generated.csv")
 
 
 if __name__ == "__main__":
-    compute_graph_statistics()
+    dataloader = get_adj_dataloader(Config.DATA_PATH, Config.BATCH_SIZE, Config.MODEL_DEPTH)
+    compute_graph_statistics(dataloader)
