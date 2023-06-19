@@ -107,7 +107,7 @@ class ModelManager:
                 t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
                 adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
                 adj = torch.clamp(adj, -1.0, 1.0)
-                adj = adj.squeeze().squeeze().numpy()
+                adj = adj.squeeze().squeeze().cpu().numpy()
                 utils.normalize(adj)
 
             torch.save(adj, f'output/graphs/graph_{num}.pt')
