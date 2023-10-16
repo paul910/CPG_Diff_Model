@@ -1,6 +1,9 @@
+from os.path import exists
+
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
+from torch_geometric.utils import to_dense_adj
 
 
 def compute(dl, filename):
@@ -51,20 +54,24 @@ def compute_centralization(graph):
 
 
 def main():
-    num_nodes = 256
-    out = None
-    for i in range(9):
-        adj = torch.load(f"output/graphs/graph_{num_nodes}_{i}.pt", map_location=torch.device('cpu'))
-        adj = torch.from_numpy(adj).unsqueeze(0).unsqueeze(0)
+    df = pd.DataFrame(columns=['num_nodes', 'num_edges', 'density', 'cluster_coefficient', 'centralization'])
+    for num_nodes in [128, 256, 512, 1024]:
+        for i in range(10):
+            if exists(f"output/graphs/cpg_{num_nodes}_{i}.pt"):
+                graph = torch.load(f"output/graphs/cpg_{num_nodes}_{i}.pt", map_location=torch.device('cpu'))
+                adj = to_dense_adj(graph.edge_index)[0]
 
-        if out is None:
-            out = adj
-        else:
-            out = torch.cat((out, adj), 0)
+                num_edges = count_edges(adj)
+                density = compute_density(adj)
+                cluster_coefficient = compute_cluster_coefficient(adj)
+                centralization = compute_centralization(adj)
 
-    dataloader = DataLoader(out, batch_size=1, shuffle=True)
+                df = pd.concat([df, pd.DataFrame({'num_nodes': num_nodes, 'num_edges': num_edges, 'density': density,
+                                                  'cluster_coefficient': cluster_coefficient,
+                                                  'centralization': centralization}, index=[0])], ignore_index=True)
 
-    compute(dataloader, f"stats/graph_{num_nodes}_stats.csv")
+    df = df.groupby('num_nodes').mean()
+    df.to_csv("stats_generated.csv")
 
 
 if __name__ == "__main__":

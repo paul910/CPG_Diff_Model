@@ -86,7 +86,7 @@ def show_tensor_image(adj: Tensor):
 
 def normalize(adj):
     mid = ((np.max(adj) - np.min(adj)) / 2)
-    gain = 0.5
+    gain = 0.1
     threshold = mid + (np.abs(mid) * gain)
     adj[adj < threshold] = -1.0
     adj[adj >= threshold] = 1.0

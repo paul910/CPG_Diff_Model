@@ -89,7 +89,7 @@ class ModelManager:
         num_show = 10
         stepsize = int(self.config.T / num_show)
 
-        for i in reversed(range(self.config.T)):
+        for i in tqdm(reversed(range(self.config.T))):
             t = torch.full((1,), i, device=self.config.DEVICE, dtype=torch.long)
             adj = self.diffusion_utils.sample_timestep(adj, t, self.model)
             adj = torch.clamp(adj, -1.0, 1.0)
